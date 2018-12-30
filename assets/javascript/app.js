@@ -1,50 +1,60 @@
 
 $(document).ready(function () {
 
-var APIKey = "lz9rVgMTz2Jx2dYIq60Sc0ynPzx3uuKX";
-var topics = ["baseball", "basketball", "golf", "swimming", "soccer", "dogs", "cats"];
+var APIKey = "f2c7f03ce6caef2a5f775dc746cdf6d9";
+var ingredient = ["rice", "steak", "fish", "lettuce", "milk", "chicken"];
 
-for (var i=0; i < topics.length; i++) {
- //Create buttons for each itme in topics
 
- var newBtn = $("<button>").text(topics[i])
+ //Create buttons for each itme in ingredient
+ for (var i=0; i < ingredient.length; i++) {
+ var newBtn = $("<button>").text(ingredient[i])
     .addClass("btn btn-primary")
-    .attr("data-name", topics[i]);
-
+    .attr("data-name", ingredient[i]);
  $("#btn-view").append(newBtn);
-
 };
 
-function getGifs(currentTopic){
+//Make API call to obtain data
+function getDishes(currentDish){
  console.log({
-     currentTopic: currentTopic
- })
- var queryURL = "https://api.giphy.com/v1/gifs/search?api_key=" + APIKey + "&q=" + currentTopic + "&limit=10&offset=0&rating=G&lang=en";
+     currentDish: currentDish
+ });
+//Create Query URL
+ var queryURL = "https://www.food2fork.com/api/search?key=" + APIKey + "&q=" + currentDish + "&page=1";
+//Empty the DIV of previous data
 $("#gif-view").empty();
+
+//Make AJAX call
     $.ajax({
         url: queryURL,
         method: "GET"}).then(function(response){
             console.log({ response: response });       
-      
-    //    renderGifs(response);
-    for (var k=0; k < 10; k++){
-        var nextGif = $("<img>").attr("src", response.data[k].images.original.url);
-        $("#gif-view").append(nextGif);
+//Insert three dish pics with title   
+    for (var k=0; k < 3; k++){
+
+        var usableResponse = JSON.parse(response);
+        console.log(usableResponse);
+        
+        var dishTitle = $("<div>").text(usableResponse.recipes[k].title);
+        $("#gif-view").append(dishTitle);
+
+        var nextDish = $("<img>").attr('src', usableResponse.recipes[k].image_url);
+        $("#gif-view").append(nextDish);
     };
-     // function  renderGifs() {
     });
 
 };
 
+//Listen for click on one of the available buttons
+
 $(".btn").on("click", function(event){
     event.preventDefault();
 
-    var clickedTopic = $(this).attr("data-name");
+    var clickedIngredient = $(this).attr("data-name");
 
     console.log({
-        clickedTopic: clickedTopic
+        clickedIngredient: clickedIngredient
     });
-    getGifs(clickedTopic);
+    getDishes(clickedIngredient);
 });
 
 })
